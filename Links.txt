@@ -1,0 +1,20 @@
+
+
+QCC2 Vex Gyro Libary and forum discussion.
+-----------------------------------------------
+https://github.com/JMMcKinneyWPI/GyroPIDLibrary
+http://www.vexforum.com/showthread.php?s=13c814331b65b5802b6205854b52c366&t=84579
+
+
+Linearizing Sharp Ranger Data
+-----------------------------------------------
+https://acroname.com/articles/linearizing-sharp-ranger-data
+
+PID
+---
+http://www.inpharmix.com/jps/PID_Controller_For_Lego_Mindstorms_Robots.html
+http://www.seattlerobotics.org/Encoder/200108/using_a_pid.html
+
+Tasks
+-----
+http://www.robotc.net/wikiarchive/Multitasking_tips

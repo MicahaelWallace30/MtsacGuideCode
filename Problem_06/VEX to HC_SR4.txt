@@ -1,0 +1,32 @@
+HC-Sro4 trig: input of Sensor
+HC-Sro4 eco:  output of Sensor
+
+-------------------------------
+
+*Cortex Microcontroller_Ultrasonic Sensor:
+-vex input = Digital
+-vex output = Digital
+*ex:
+I-digital 8
+O-digital 9
+
+*PIC Microcontroller_Ultrasonic Sensor:
+-vex input = interrupt
+-vex output = analog/digital
+
+-------------------------------
+
+-vex: white =Signal
+-vex: red   =+5v
+-vex: black =Ground
+
+-------------------------------
+
+trig = (inner) white = I
+eco = (inner) white = O
+vcc = (middle) red
+grd = (outer) black
+
+-------------------------------
+
+
