@@ -34,7 +34,7 @@ under the License.
 */
 #include "Robot_Functions.h"
 
-int const LINE_THRESHOLD = 500;//CHANGE VALUE
+int const LINE_THRESHOLD = 2600;//CHANGE VALUE
 
 bool findLine(int speed, int const TIME_OUT_MS = DEFAULAT_TIME_OUT_MS);
 bool followLine(int speed, int distance, int const TIME_OUT_MS = DEFAULAT_TIME_OUT_MS);
@@ -60,7 +60,7 @@ bool findLine(int speed, int const TIME_OUT_MS)
 {
 	ClearTimer(T1);
 
-	while(SensorValue(LineSensorLeft) >	LINE_THRESHOLD && SensorValue(LineSensorMiddle) > LINE_THRESHOLD && SensorValue(LineSensorRight) > LINE_THRESHOLD)
+	while(SensorValue(LineSensorLeft) <	LINE_THRESHOLD && SensorValue(LineSensorMiddle) < LINE_THRESHOLD && SensorValue(LineSensorRight) < LINE_THRESHOLD)
 	{
 		if(time1[T1] > TIME_OUT_MS)
 		{
@@ -103,13 +103,13 @@ bool followLine(int speed, int distance, int const TIME_OUT_MS)
 		{
 			drive(speed,0);
 		}
-		else if(middle < LINE_THRESHOLD && left < LINE_THRESHOLD && right > LINE_THRESHOLD)//only right sensor turn right
+		else if(left < LINE_THRESHOLD && right > LINE_THRESHOLD)//only right sensor turn right
 		{
 			drive(speed, turnSpeed);
 			lastTurnLeft = false;
 			lastTurnRight = true;
 		}
-		else if(middle < LINE_THRESHOLD && left > LINE_THRESHOLD && right < LINE_THRESHOLD)//only left sensor turn left
+		else if( left > LINE_THRESHOLD && right < LINE_THRESHOLD)//only left sensor turn left
 		{
 			drive(speed, -turnSpeed);
 			lastTurnLeft = true;
