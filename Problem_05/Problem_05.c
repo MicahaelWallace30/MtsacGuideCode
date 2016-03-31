@@ -1,5 +1,8 @@
 #pragma config(Sensor, in1,    PotLift,        sensorPotentiometer)
 #pragma config(Sensor, in2,    teamSelection,  sensorPotentiometer)
+#pragma config(Sensor, in3,    LineSensorLeft, sensorLineFollower)
+#pragma config(Sensor, in4,    LineSensorMiddle, sensorLineFollower)
+#pragma config(Sensor, in5,    LineSensorRight, sensorLineFollower)
 #pragma config(Sensor, dgtl1,  EncoderDriveLeft, sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  EncoderDriveRight, sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  ButtonFront,    sensorTouch)
@@ -31,36 +34,104 @@ under the License.
 */
 #include "Robot_Functions.h"
 
-int const DISTANCE_REVERSE_TURN = 1000;
-int const SPEED_REVERSE_TURN = 40;
-int const SPEED_FORWARD = 60;
+int const LINE_THRESHOLD = 500;//CHANGE VALUE
+
+bool findLine(int speed, int const TIME_OUT_MS = DEFAULAT_TIME_OUT_MS);
+bool followLine(int speed, int distance, int const TIME_OUT_MS = DEFAULAT_TIME_OUT_MS);
 
 
 task main()
 {
-	while(true)//infinte loop
+	//find line or stop after 15 secs
+	findLine(60, 15000);
+
+	//one or the other not both functions for testing
+
+	//follow line at speed 60 for 5000 encoder counts
+	//followLine(60, 5000);
+
+}
+
+
+//simple function to drive untill it finds line
+//if timer runs out returns false
+//if finds line returns true
+bool findLine(int speed, int const TIME_OUT_MS)
+{
+	ClearTimer(T1);
+
+	while(SensorValue(LineSensorLeft) >	LINE_THRESHOLD && SensorValue(LineSensorMiddle) > LINE_THRESHOLD && SensorValue(LineSensorRight) > LINE_THRESHOLD)
 	{
-		while(SensorValue(ButtonFront) == 0)//while button is not pressed
+		if(time1[T1] > TIME_OUT_MS)
 		{
-			drive(SPEED_FORWARD, 0);//drive forward until robot hits some thing
-		}
-		drive(0,0);//stop drive
-
-
-		wait1Msec(500);//WAIT
-
-		byte direction = random(1);//random direction 0 or 1
-
-		if(direction == 1)//go backwards and turn to the left
-		{
-			drive(-SPEED_REVERSE_TURN, SPEED_REVERSE_TURN/2, DISTANCE_REVERSE_TURN);
-		}
-		else//go backwards and turn to the right
-		{
-			drive(-SPEED_REVERSE_TURN, -SPEED_REVERSE_TURN/2, DISTANCE_REVERSE_TURN);
+			drive(0,0);
+			return false;
 		}
 
-		wait1Msec(500);//WAIT
-
+		drive(speed,0);
 	}
+	drive(0,0);
+	return true;
+}
+
+
+//simple function to follow line for distance
+//if timer runs out returns false
+//if finds line returns true
+bool followLine(int speed, int distance, int const TIME_OUT_MS)
+{
+	ClearTimer(T1);//timer to quit
+	bool lastTurnLeft = false;//keep track of last line sensor
+	bool lastTurnRight = false;//keep track of last line sensor
+	int turnSpeed = speed / 3;//change to increase amount of turn to correct line following
+	int turnSpeedDrastic = turnSpeed * 2;
+
+
+	while(abs(SensorValue(EncoderDriveLeft)) < distance && abs(SensorValue(EncoderDriveRight)) < distance)//loop until distance is aquired
+	{
+		if(time1[T1] > TIME_OUT_MS)//check for time out
+		{
+			drive(0,0);
+			return false;
+		}
+
+		int left = SensorValue(LineSensorLeft);
+		int middle = SensorValue(LineSensorMiddle);
+		int right = SensorValue(LineSensorRight);
+
+		if(middle > LINE_THRESHOLD)//middle sensor on line fo forward
+		{
+			drive(speed,0);
+		}
+		else if(middle < LINE_THRESHOLD && left < LINE_THRESHOLD && right > LINE_THRESHOLD)//only right sensor turn right
+		{
+			drive(speed, turnSpeed);
+			lastTurnLeft = false;
+			lastTurnRight = true;
+		}
+		else if(middle < LINE_THRESHOLD && left > LINE_THRESHOLD && right < LINE_THRESHOLD)//only left sensor turn left
+		{
+			drive(speed, -turnSpeed);
+			lastTurnLeft = true;
+			lastTurnRight = false;
+		}
+		else//oh shit no line
+		{
+			if(lastTurnRight)//change the turn speed or turn type to correct errors
+			{
+				drive(speed, turnSpeedDrastic);
+			}
+			else if(lastTurnLeft)
+			{
+				drive(speed, -turnSpeedDrastic);
+			}
+			else
+			{
+				//some thing is wrong or never on line
+				return false;
+			}
+		}
+	}
+	drive(0,0);
+	return true;
 }
