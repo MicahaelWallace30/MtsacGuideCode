@@ -52,5 +52,10 @@ task main()
 		drive(100,0);	//set drive motors to forward at 100
 	}//end while loop
 	drive(0,0);//set all drive motors to zero
+     
+    //another way to achieve the same behavior is to use the wait function
+    drive(100,0);//set drive motors to forward at 100
+    wait1Msec(1000);//do nothing for 1000 ms
+    drive(0,0);//turn all drive motors off
 
 }//end main
